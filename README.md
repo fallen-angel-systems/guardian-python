@@ -1,12 +1,8 @@
-# FAS Guardian -- Python SDK
+# 🛡️ FAS Guardian — Python SDK
 
 **Protect your AI from prompt injection in 3 lines of code.**
 
-FAS Guardian is an AI firewall that scans user inputs for prompt injection, jailbreaks, and adversarial attacks before they reach your LLM. Triple-layer detection engine with 3,100+ threat patterns, scanning in under 80ms.
-
-[![PyPI](https://img.shields.io/pypi/v/fas-guardian)](https://pypi.org/project/fas-guardian/)
-[![Python](https://img.shields.io/pypi/pyversions/fas-guardian)](https://pypi.org/project/fas-guardian/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+FAS Guardian is an AI firewall that scans user inputs for prompt injection, jailbreaks, and adversarial attacks before they reach your LLM. Triple-layer detection engine with 3,100+ threat patterns, scanning in under 80ms. Pro and Enterprise plans include Ad Isolation to keep ad content out of your model's context.
 
 ## Installation
 
@@ -23,7 +19,7 @@ guardian = Guardian(api_key="fsg_your_key_here")
 
 result = guardian.scan("user input here")
 if result.blocked:
-    print("Threat blocked.")
+    print("🚨 Threat blocked!")
 else:
     # Safe to send to your LLM
     response = your_llm.chat(user_input)
@@ -34,16 +30,18 @@ That's it. Three lines between your users and your AI.
 ## Protect a Chatbot
 
 ```python
-from fas_guardian import Guardian
+from fas_guardian import Guardian, RateLimitError
 
 guardian = Guardian(api_key="fsg_your_key_here")
 
 def handle_message(user_input: str) -> str:
+    # Scan before sending to AI
     result = guardian.scan(user_input)
     
     if result.blocked:
         return "I can't process that request."
     
+    # Safe — send to your LLM
     return your_llm.chat(user_input)
 ```
 
@@ -127,7 +125,7 @@ try:
 except AuthenticationError:
     print("Invalid API key")
 except RateLimitError as e:
-    print(f"Rate limited -- retry after {e.retry_after}s")
+    print(f"Rate limited — retry after {e.retry_after}s")
 except GuardianError as e:
     print(f"API error: {e.message}")
 ```
@@ -145,33 +143,48 @@ guardian = Guardian(api_key="fsg_xxx", version="v1")
 guardian = Guardian(api_key="fsg_xxx", timeout=5.0)
 ```
 
+## Ad Isolation (Pro & Enterprise)
+
+Strip ad content from your AI's context so ads never become attack vectors:
+
+```python
+# Tag ads in your content, Guardian strips them before they hit the model
+result = guardian.isolate("Check this out! <sponsored>Buy now!</sponsored> Pretty cool right?")
+print(result.cleaned)
+# "Check this out! [ad content removed] Pretty cool right?"
+
+# Works on full conversation history too
+result = guardian.isolate_conversation(messages)
+```
+
+Users still see ads. Your AI never processes them. Supports `<guardian-ad>`, `<sponsored>`, `<ad>`, `<promoted>`, BBCode, HTML comments, and custom tags.
+
 ## How It Works
 
 FAS Guardian uses a triple-layer detection engine:
 
 1. **Lieutenant (V1 Regex)** -- 258 pattern rules catch known attack signatures instantly
-2. **Spectre (ML Classifier)** -- Deep learning model detects malicious intent in under 50ms
-3. **Arc Engine (Semantic Search)** -- 2,866 adversarial patterns matched via sentence embeddings
+2. **Spectre (ML Classifier)** -- Deep learning model detects malicious intent in ~50ms
+3. **Arc Engine (Semantic Search)** -- 3,100+ adversarial patterns matched via sentence embeddings
 
-If any layer flags the input, it is blocked. Three engines working together means attackers would have to fool all three simultaneously.
+If **any** layer flags the input, it's blocked. Three engines working together means attackers would have to fool all three simultaneously.
 
 ## Pricing
 
-| Plan | Price | Scans/mo | Engine |
-|------|-------|----------|--------|
-| Basic | $19.99/mo | 10,000 | V1 Regex |
-| Pro | $49.99/mo | 50,000 | V2 Triple-Layer |
-| Enterprise | Custom | Unlimited | V2 + SLA |
+| Plan | Price | Scans/mo | Features |
+|------|-------|----------|----------|
+| Basic | $19.99/mo | 10,000 | V1 Regex Engine |
+| Pro | $49.99/mo | 50,000 | V2 Triple-Layer + Ad Isolation |
+| Enterprise | Custom | Unlimited | V2 + Ad Isolation + Custom Policies + SLA |
 
 [Get your API key](https://fallenangelsystems.com)
 
 ## Links
 
-- [Website](https://fallenangelsystems.com)
-- [API Docs](https://fallenangelsystems.com/docs)
-- [Live Demo](https://fallenangelsystems.com/demo)
-- [Support](mailto:support@fallenangelsystems.com)
-- [PyPI](https://pypi.org/project/fas-guardian/)
+- 🌐 [Website](https://fallenangelsystems.com)
+- 📖 [API Docs](https://fallenangelsystems.com/docs)
+- 🎮 [Live Demo](https://fallenangelsystems.com/#demo)
+- 💬 [Support](mailto:support@fallenangelsystems.com)
 
 ---
 
