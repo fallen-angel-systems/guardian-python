@@ -1,4 +1,4 @@
-# 🛡️ FAS Guardian — Python SDK
+# 🛡️ FAS Guardian - Python SDK
 
 **Protect your AI from prompt injection in 3 lines of code.**
 
